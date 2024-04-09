@@ -3,9 +3,6 @@
 This directory contains the PowerShell module for the Metric service.
 
 ---
-## Status
-[![Az.Metric](https://img.shields.io/powershellgallery/v/Az.Metric.svg?style=flat-square&label=Az.Metric "Az.Metric")](https://www.powershellgallery.com/packages/Az.Metric/)
-
 ## Info
 - Modifiable: yes
 - Generated: all
@@ -34,10 +31,12 @@ For information on how to develop for `Az.Metric`, see [how-to.md](how-to.md).
 require:
 # readme.azure.noprofile.md is the common configuration file
   - $(this-folder)/../../readme.azure.noprofile.md
-commit: 0373f0edc4414fd402603fac51d0df93f1f70507
+  # - $(repo)/specification/monitor/data-plane/readme.md
+commit: 0550754fb421cd3a5859abf6713a542b682f626c
+tag: package-2024-02
 
 input-file:
-    - $(repo)/specification/monitor/data-plane/Microsoft.Insights/stable/2023-10-01/metricBatch.json
+  - $(repo)/specification/monitor/data-plane/Microsoft.Insights/stable/2024-02-01/metricBatch.json
 
 root-module-name: $(prefix).Monitor
 title: Metric
