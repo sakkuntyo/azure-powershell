@@ -1,0 +1,148 @@
+parameters:
+- name: targetBranch
+  displayName: Target branch where the PR will be submitted
+  type: string
+  default: main
+- name: scope
+  displayName: Select target AutoRest modules
+  type: string
+  default: AutoRest v3 & v4
+  values:
+  - AutoRest v3 And v4
+  - AutoRest v3 Only
+  - AutoRest v4 Only
+
+pr: none
+trigger: none
+
+jobs:
+- job: Preparation
+  displayName: Modules Preparation
+  steps:
+  - task: PowerShell@2
+    displayName: Get services list
+    inputs:
+      pwsh: true
+      targetType: inline
+      workingDirectory: ./src
+      script: |
+        $autorestModules = Get-ChildItem -Filter "*.AutoRest" -Directory -Recurse | Select-Object -ExpandProperty FullName
+        if ("${{ parameters.scope }}" -eq "AutoRest v3 And v4") {
+          $modulePathsList = [System.String]::Join(";", $autorestModules)
+        }
+        else {
+          $modulePaths = @()
+          $isV4Only = "${{ parameters.scope }}" -eq "AutoRest v4 Only"
+          $readmeMDs = $autorestModules | Get-ChildItem -Filter "README.md" -File
+          $readmeMDs | Foreach-Object {
+            $content = Get-Content -Path $_ -Raw
+            $pattern = 'use-extension:\s*"@autorest/powershell":\s*"([^"]+)"'
+            if ($content -match $pattern) {
+              $version = $Matches[1].Substring(0, 1)
+              if (($version -eq "3" -and !$isV4Only) -or ($version -eq "4" -and $isV4Only)) {
+                $modulePaths += $_.Directory.FullName
+              }
+            }
+            elseif ($isV4Only) {
+              $modulePaths += $_.Directory.FullName
+            }
+          }
+
+          Write-Host "##[section]$modulePaths"
+          $modulePathsList = [System.String]::Join(";", $modulePaths)
+        }
+
+        Write-Host "##vso[task.setvariable variable=modulesList;isreadonly=true]$modulePathsList"
+
+- job: CodeGeneration
+  displayName: Code Generation
+  dependsOn: Preparation
+  timeoutInMinutes: 360
+  pool: pool-windows-2019
+  steps:
+  - template: util/get-github-pat-steps.yml
+
+  - task: NodeTool@0
+    displayName: Use Node 14.15.5
+    inputs:
+      versionSpec: 14.15.5
+
+  - task: Npm@1
+    displayName: Install AutoRest
+    inputs:
+      command: custom
+      verbose: false
+      customCommand: install autorest@latest -g
+
+  - task: PowerShell@2
+    displayName: Generate & Build
+    inputs:
+      pwsh: true
+      targetType: inline
+      script: |
+        Install-Module -Name PowerShellGet -RequiredVersion 2.2.3 -Force
+        Install-Module -Name platyPS -RequiredVersion 0.14.2 -Force
+        Install-Module -Name Az.Accounts -Force;
+        Import-Module ./tools/Gen2Master/MoveFromGeneration2Master.ps1
+
+        $(modulesList).Split(";") | Foreach-Object {
+          Write-Host "##[group]Start generating module $_"
+
+          cd $_
+
+          Write-Host "##[section]Start running autorest command."
+          autorest --max-memory-size=8192
+          Write-Host "##[section]Finish running autorest command."
+
+          Write-Host "##[section]Start building the module."
+          ./build-module.ps1
+          Write-Host "##[section]Finish building the module."
+
+          cd ..
+          $currentPath = Get-Item -Path .
+          $serviceName = $currentPath.Name
+
+          Write-Host "##[section]Start moving from generation to target"
+          mkdir ../../artifacts/src/$serviceName
+          cp -r ./* ../../artifacts/src/$serviceName
+
+          Move-Generation2Master -SourcePath ../../artifacts/src/$serviceName -DestPath .
+          Write-Host "##[section]Finish moving from generation to target"
+
+          Write-Host "##[endgroup]"
+          Write-Host
+        }
+
+  - task: PowerShell@2
+    displayName: Create PR to target branch
+    inputs:
+      pwsh: true
+      targetType: inline
+      script: |
+        if ("${{ parameters.scope }}" -eq "AutoRest v3 And v4") {
+          $branchName = "codegen/refresh-autorest-v3-v4"
+        }
+        elseif ("${{ parameters.scope }}" -eq "AutoRest v3 Only") {
+          $branchName = "codegen/refresh-autorest-v3"
+        }
+        elseif ("${{ parameters.scope }}" -eq "AutoRest v4 Only") {
+          $branchName = "codegen/refresh-autorest-v4"
+        }
+
+        git checkout -b $branchName origin/${{ parameters.targetBranch }}
+        git config user.email "65331932+azure-powershell-bot@users.noreply.github.com"
+        git config user.name "azure-powershell-bot"
+        git add src
+        git add tools/CreateMappings_rules.json
+        git commit -m "Refresh {{ parameters.scope }} modules from $branchName to ${{ parameters.targetBranch }}"
+        git remote set-url origin https://azure-powershell-bot:$(GithubToken)@github.com/Azure/azure-powershell.git
+        git push origin $branchName --force
+
+        $sourceBranch = "$(Build.SourceBranch)"
+        $sourceBranch = $sourceBranch.Replace("refs/heads/", "")
+        $title = "Refresh {{ parameters.scope }} modules from $branchName to ${{ parameters.targetBranch }}"
+        $headBranch = $branchName
+        $baseBranch = "${{ parameters.targetBranch }}"
+        $description = "Refresh {{ parameters.scope }} modules from $branchName to ${{ parameters.targetBranch }}
+
+        ./tools/Github/CreatePR.ps1 -Title $title -HeadBranch $headBranch -BaseBranch $baseBranch -BotAccessToken $(GithubToken) -Description $description
