@@ -3,6 +3,7 @@
 This directory contains the PowerShell module for the DiagnosticSetting service.
 
 ---
+
 ## Info
 - Modifiable: yes
 - Generated: all
