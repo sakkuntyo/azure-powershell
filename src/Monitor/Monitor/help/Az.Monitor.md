@@ -82,13 +82,16 @@ Get for private link scoped resource
 Gets a log profile.
 
 ### [Get-AzMetric](Get-AzMetric.md)
-Gets the metric values of a resource.
+**Lists the metric values for a resource**.
 
 ### [Get-AzMetricAlertRuleV2](Get-AzMetricAlertRuleV2.md)
 Gets V2 (non-classic) metric alert rules
 
 ### [Get-AzMetricDefinition](Get-AzMetricDefinition.md)
-Gets metric definitions.
+Lists the metric definitions for the subscription.
+
+### [Get-AzMetricsBatch](Get-AzMetricsBatch.md)
+Lists the metric values for multiple resources.
 
 ### [Get-AzMonitorWorkspace](Get-AzMonitorWorkspace.md)
 Returns the specific Azure Monitor workspace
@@ -331,7 +334,7 @@ Updates an existing AutoscaleSettingsResource.
 To update other fields use the CreateOrUpdate method.
 
 ### [Update-AzDataCollectionEndpoint](Update-AzDataCollectionEndpoint.md)
-Updates part of a data collection endpoint.
+Create a data collection endpoint.
 
 ### [Update-AzDataCollectionRule](Update-AzDataCollectionRule.md)
 Update a data collection rule.
