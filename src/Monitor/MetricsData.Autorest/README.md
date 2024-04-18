@@ -1,6 +1,6 @@
 <!-- region Generated -->
 # Az.Metric
-This directory contains the PowerShell module for the Metric service.
+This directory contains the PowerShell module for the Metricsdata service.
 
 ---
 ## Info
@@ -39,7 +39,7 @@ input-file:
   - $(repo)/specification/monitor/data-plane/Microsoft.Insights/stable/2024-02-01/metricBatch.json
 
 root-module-name: $(prefix).Monitor
-title: Metric
+title: Metricsdata
 module-name: Az.Metric
 module-version: 0.1.0
 subject-prefix: ""

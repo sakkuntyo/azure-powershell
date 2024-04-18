@@ -6,7 +6,7 @@
   Author = 'Microsoft Corporation'
   CompanyName = 'Microsoft Corporation'
   Copyright = 'Microsoft Corporation. All rights reserved.'
-  Description = 'Microsoft Azure PowerShell: Metric cmdlets'
+  Description = 'Microsoft Azure PowerShell: Metricsdata cmdlets'
   PowerShellVersion = '5.1'
   DotNetFrameworkVersion = '4.7.2'
   RequiredAssemblies = './bin/Az.Metric.private.dll'
@@ -14,7 +14,7 @@
   FunctionsToExport = 'Get-AzMetricsBatch'
   PrivateData = @{
     PSData = @{
-      Tags = 'Azure', 'ResourceManager', 'ARM', 'PSModule', 'Metric'
+      Tags = 'Azure', 'ResourceManager', 'ARM', 'PSModule', 'Metricsdata'
       LicenseUri = 'https://aka.ms/azps-license'
       ProjectUri = 'https://github.com/Azure/azure-powershell'
       ReleaseNotes = ''

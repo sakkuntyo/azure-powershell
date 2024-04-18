@@ -8,7 +8,7 @@ Locale: en-US
 
 # Az.Metric Module
 ## Description
-Microsoft Azure PowerShell: Metric cmdlets
+Microsoft Azure PowerShell: Metricsdata cmdlets
 
 ## Az.Metric Cmdlets
 ### [Get-AzMetricsBatch](Get-AzMetricsBatch.md)

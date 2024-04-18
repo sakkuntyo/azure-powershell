@@ -22,9 +22,9 @@ Get-AzMetricsBatch -Endpoint <String> -Name <List<String>> -Namespace <String> [
 
 ### BatchViaIdentityExpanded
 ```
-Get-AzMetricsBatch -Endpoint <String> -InputObject <IMetricIdentity> -Name <List<String>> -Namespace <String>
- [-Aggregation <String>] [-EndTime <String>] [-Filter <String>] [-Interval <String>] [-Orderby <String>]
- [-Rollupby <String>] [-StartTime <String>] [-Top <Int32>] [-ResourceId <String[]>]
+Get-AzMetricsBatch -Endpoint <String> -InputObject <IMetricsdataIdentity> -Name <List<String>>
+ -Namespace <String> [-Aggregation <String>] [-EndTime <String>] [-Filter <String>] [-Interval <String>]
+ [-Orderby <String>] [-Rollupby <String>] [-StartTime <String>] [-Top <Int32>] [-ResourceId <String[]>]
  [-DefaultProfile <PSObject>] [-Confirm] [-WhatIf] [<CommonParameters>]
 ```
 
@@ -246,7 +246,7 @@ Accept wildcard characters: False
 Identity Parameter
 
 ```yaml
-Type: Microsoft.Azure.PowerShell.Cmdlets.Metric.Models.IMetricIdentity
+Type: Microsoft.Azure.PowerShell.Cmdlets.Metricsdata.Models.IMetricsdataIdentity
 Parameter Sets: BatchViaIdentityExpanded
 Aliases:
 
@@ -441,11 +441,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Microsoft.Azure.PowerShell.Cmdlets.Metric.Models.IMetricIdentity
+### Microsoft.Azure.PowerShell.Cmdlets.Metricsdata.Models.IMetricsdataIdentity
 
 ## OUTPUTS
 
-### Microsoft.Azure.PowerShell.Cmdlets.Metric.Models.IMetricResultsResponse
+### Microsoft.Azure.PowerShell.Cmdlets.Metricsdata.Models.IMetricResultsResponse
 
 ## NOTES
 
